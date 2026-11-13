@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SALES
+}
+
+enum Segment {
+  B2G
+  B2B
+}
+
+enum ActivityStatus {
+  NOT_VISITED
+  VISITED
+}
+
+model User {
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  password     String
+  role         Role           @default(SALES)
+  activities   Activity[]     @relation("SalesActivities")
+  histories    VisitHistory[] @relation("HistoryActor")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Entity {
+  id         String     @id @default(uuid())
+  name       String
+  type       String
+  segment    Segment
+  region     String
+  activities Activity[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([name])
+  @@index([segment])
+}
+
+model Activity {
+  id        String         @id @default(uuid())
+  entityId  String
+  salesId   String
+  segment   Segment
+  visitDate DateTime       @db.Date
+  status    ActivityStatus @default(NOT_VISITED)
+  entity    Entity         @relation(fields: [entityId], references: [id])
+  sales     User           @relation("SalesActivities", fields: [salesId], references: [id])
+  histories VisitHistory[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([visitDate])
+  @@index([status, segment])
+}
+
+model VisitHistory {
+  id         String         @id @default(uuid())
+  activityId String
+  changedBy  String
+  oldStatus  ActivityStatus
+  newStatus  ActivityStatus
+  activity   Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  actor      User           @relation("HistoryActor", fields: [changedBy], references: [id])
+  createdAt  DateTime       @default(now())
+}

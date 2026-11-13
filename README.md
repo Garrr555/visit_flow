@@ -16,17 +16,26 @@ mencatat dan memantau kunjungan ke berbagai entitas.
 
 ```bash
     account: admin@gmail.com (Memiliki Role Admin)
+    password: Password123!
 ```
 
 ```bash
     account: sales@gmail.com (Memiliki Role Sales)
+    password: Password123!
 ```
 
-## Install Module
+## Buat file .env
+
+- ubah file ".env.example" menjadi ".env" (lakukan pada folder client & server)
+- masukan url database postgreSQL ke "DATABSE_URL" (Lakukan pada folder server)
+
+## Install Module pada Client dan Server
 
 ```bash
 npm install
 ```
+
+## 
 
 ## Menjalankan server
 
